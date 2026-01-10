@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
   CreditCard, 
@@ -40,6 +41,9 @@ const NavItem = ({ icon, label, active, onClick }: NavItemProps) => (
 );
 
 const Sidebar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   return (
     <aside className="fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col p-6">
       {/* Logo */}
@@ -52,10 +56,20 @@ const Sidebar = () => {
 
       {/* Main Navigation */}
       <nav className="flex-1 space-y-2">
-        <NavItem icon={<LayoutDashboard size={20} />} label="Dashboard" active />
+        <NavItem 
+          icon={<LayoutDashboard size={20} />} 
+          label="Dashboard" 
+          active={location.pathname === "/"} 
+          onClick={() => navigate("/")}
+        />
         <NavItem icon={<CreditCard size={20} />} label="Cards" />
         <NavItem icon={<ArrowLeftRight size={20} />} label="Transfers" />
-        <NavItem icon={<PieChart size={20} />} label="Analytics" />
+        <NavItem 
+          icon={<PieChart size={20} />} 
+          label="Analytics" 
+          active={location.pathname === "/analytics"} 
+          onClick={() => navigate("/analytics")}
+        />
         <NavItem icon={<Receipt size={20} />} label="Transactions" />
       </nav>
 
@@ -63,7 +77,11 @@ const Sidebar = () => {
       <div className="space-y-2 pt-6 border-t border-sidebar-border">
         <NavItem icon={<Settings size={20} />} label="Settings" />
         <NavItem icon={<HelpCircle size={20} />} label="Help Center" />
-        <NavItem icon={<LogOut size={20} />} label="Log Out" />
+        <NavItem 
+          icon={<LogOut size={20} />} 
+          label="Log Out" 
+          onClick={() => navigate("/login")}
+        />
       </div>
     </aside>
   );
