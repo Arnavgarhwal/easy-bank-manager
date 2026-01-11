@@ -47,7 +47,7 @@ const QuickActions = () => {
         className="bg-card rounded-3xl p-6 border border-border"
       >
         <h3 className="font-display font-semibold text-lg text-foreground mb-4">Quick Actions</h3>
-        <div className="grid grid-cols-6 gap-3">
+        <div className="grid grid-cols-3 sm:grid-cols-6 gap-3">
           {actions.map((action) => (
             <ActionButton
               key={action.label}
