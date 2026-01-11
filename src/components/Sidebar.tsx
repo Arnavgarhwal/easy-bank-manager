@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
   LayoutDashboard, 
@@ -8,7 +8,8 @@ import {
   Receipt, 
   Settings,
   HelpCircle,
-  LogOut
+  LogOut,
+  X
 } from "lucide-react";
 
 interface NavItemProps {
@@ -16,6 +17,11 @@ interface NavItemProps {
   label: string;
   active?: boolean;
   onClick?: () => void;
+}
+
+interface SidebarProps {
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
 const NavItem = ({ icon, label, active, onClick }: NavItemProps) => (
@@ -40,18 +46,31 @@ const NavItem = ({ icon, label, active, onClick }: NavItemProps) => (
   </motion.button>
 );
 
-const Sidebar = () => {
+const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  return (
-    <aside className="fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col p-6">
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    onClose?.();
+  };
+
+  const sidebarContent = (
+    <>
       {/* Logo */}
-      <div className="flex items-center gap-3 mb-10">
-        <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center glow-effect">
-          <span className="font-display font-bold text-primary-foreground text-lg">V</span>
+      <div className="flex items-center justify-between mb-10">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary flex items-center justify-center glow-effect">
+            <span className="font-display font-bold text-primary-foreground text-lg">V</span>
+          </div>
+          <span className="font-display font-semibold text-xl text-foreground">Vault</span>
         </div>
-        <span className="font-display font-semibold text-xl text-foreground">Vault</span>
+        <button
+          onClick={onClose}
+          className="lg:hidden p-2 rounded-lg hover:bg-secondary transition-colors"
+        >
+          <X size={20} className="text-muted-foreground" />
+        </button>
       </div>
 
       {/* Main Navigation */}
@@ -60,17 +79,32 @@ const Sidebar = () => {
           icon={<LayoutDashboard size={20} />} 
           label="Dashboard" 
           active={location.pathname === "/"} 
-          onClick={() => navigate("/")}
+          onClick={() => handleNavigation("/")}
         />
-        <NavItem icon={<CreditCard size={20} />} label="Cards" />
-        <NavItem icon={<ArrowLeftRight size={20} />} label="Transfers" />
+        <NavItem 
+          icon={<CreditCard size={20} />} 
+          label="Cards" 
+          active={location.pathname === "/cards"}
+          onClick={() => handleNavigation("/cards")}
+        />
+        <NavItem 
+          icon={<ArrowLeftRight size={20} />} 
+          label="Transfers"
+          active={location.pathname === "/transfers"}
+          onClick={() => handleNavigation("/transfers")}
+        />
         <NavItem 
           icon={<PieChart size={20} />} 
           label="Analytics" 
           active={location.pathname === "/analytics"} 
-          onClick={() => navigate("/analytics")}
+          onClick={() => handleNavigation("/analytics")}
         />
-        <NavItem icon={<Receipt size={20} />} label="Transactions" />
+        <NavItem 
+          icon={<Receipt size={20} />} 
+          label="Transactions"
+          active={location.pathname === "/transactions"}
+          onClick={() => handleNavigation("/transactions")}
+        />
       </nav>
 
       {/* Bottom Navigation */}
@@ -80,10 +114,43 @@ const Sidebar = () => {
         <NavItem 
           icon={<LogOut size={20} />} 
           label="Log Out" 
-          onClick={() => navigate("/login")}
+          onClick={() => handleNavigation("/login")}
         />
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop Sidebar */}
+      <aside className="hidden lg:flex fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border flex-col p-6 z-40">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile Sidebar Overlay */}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={onClose}
+              className="lg:hidden fixed inset-0 bg-background/80 backdrop-blur-sm z-40"
+            />
+            <motion.aside
+              initial={{ x: -280 }}
+              animate={{ x: 0 }}
+              exit={{ x: -280 }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="lg:hidden fixed left-0 top-0 h-screen w-64 bg-sidebar border-r border-sidebar-border flex flex-col p-6 z-50"
+            >
+              {sidebarContent}
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+    </>
   );
 };
 

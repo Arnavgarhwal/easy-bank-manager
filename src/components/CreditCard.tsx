@@ -10,7 +10,7 @@ interface CreditCardProps {
 
 const CreditCard = ({ 
   cardNumber = "4532 •••• •••• 7890",
-  cardHolder = "ALEX JOHNSON",
+  cardHolder = "ARNAV GARHWAL",
   expiryDate = "12/28",
   variant = "primary"
 }: CreditCardProps) => {
