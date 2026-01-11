@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
-import { Bell, Search, ChevronDown, Sun, Moon, Menu } from "lucide-react";
+import { Search, ChevronDown, Sun, Moon, Menu } from "lucide-react";
 import { useTheme } from "@/hooks/useTheme";
-import { useState } from "react";
+import NotificationsDropdown from "./NotificationsDropdown";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -70,16 +70,12 @@ const Header = ({ onMenuClick }: HeaderProps) => {
         </motion.button>
 
         {/* Notifications */}
-        <motion.button
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="relative p-2.5 rounded-xl bg-secondary hover:bg-muted transition-colors"
         >
-          <Bell size={20} className="text-foreground" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-primary animate-pulse-glow" />
-        </motion.button>
+          <NotificationsDropdown />
+        </motion.div>
 
         {/* Profile */}
         <motion.button

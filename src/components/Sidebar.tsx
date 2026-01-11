@@ -9,7 +9,8 @@ import {
   Settings,
   HelpCircle,
   LogOut,
-  X
+  X,
+  FileText
 } from "lucide-react";
 
 interface NavItemProps {
@@ -105,11 +106,22 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           active={location.pathname === "/transactions"}
           onClick={() => handleNavigation("/transactions")}
         />
+        <NavItem 
+          icon={<FileText size={20} />} 
+          label="Bills & Payments"
+          active={location.pathname === "/bills"}
+          onClick={() => handleNavigation("/bills")}
+        />
       </nav>
 
       {/* Bottom Navigation */}
       <div className="space-y-2 pt-6 border-t border-sidebar-border">
-        <NavItem icon={<Settings size={20} />} label="Settings" />
+        <NavItem 
+          icon={<Settings size={20} />} 
+          label="Settings" 
+          active={location.pathname === "/settings"}
+          onClick={() => handleNavigation("/settings")}
+        />
         <NavItem icon={<HelpCircle size={20} />} label="Help Center" />
         <NavItem 
           icon={<LogOut size={20} />} 
