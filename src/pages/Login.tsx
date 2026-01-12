@@ -15,10 +15,14 @@ const Login = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate login
+    // Check for admin credentials
     setTimeout(() => {
       setIsLoading(false);
-      navigate("/");
+      if (email === "admin123@gmail.com" && password === "admin12345") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     }, 1500);
   };
 

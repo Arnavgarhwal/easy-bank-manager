@@ -10,7 +10,9 @@ import {
   HelpCircle,
   LogOut,
   X,
-  FileText
+  FileText,
+  Target,
+  Activity
 } from "lucide-react";
 
 interface NavItemProps {
@@ -112,6 +114,18 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           active={location.pathname === "/bills"}
           onClick={() => handleNavigation("/bills")}
         />
+        <NavItem 
+          icon={<Target size={20} />} 
+          label="Savings Goals"
+          active={location.pathname === "/savings"}
+          onClick={() => handleNavigation("/savings")}
+        />
+        <NavItem 
+          icon={<Activity size={20} />} 
+          label="Activity Logs"
+          active={location.pathname === "/activity"}
+          onClick={() => handleNavigation("/activity")}
+        />
       </nav>
 
       {/* Bottom Navigation */}
@@ -122,7 +136,12 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           active={location.pathname === "/settings"}
           onClick={() => handleNavigation("/settings")}
         />
-        <NavItem icon={<HelpCircle size={20} />} label="Help Center" />
+        <NavItem 
+          icon={<HelpCircle size={20} />} 
+          label="Help Center" 
+          active={location.pathname === "/help"}
+          onClick={() => handleNavigation("/help")}
+        />
         <NavItem 
           icon={<LogOut size={20} />} 
           label="Log Out" 

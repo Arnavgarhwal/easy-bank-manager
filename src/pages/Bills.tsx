@@ -18,7 +18,9 @@ import {
   Bell,
   X,
   DollarSign,
+  Users,
 } from "lucide-react";
+import SplitBillModal from "@/components/SplitBillModal";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -145,6 +147,7 @@ const Bills = () => {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isReminderModalOpen, setIsReminderModalOpen] = useState(false);
+  const [isSplitModalOpen, setIsSplitModalOpen] = useState(false);
   const [selectedBill, setSelectedBill] = useState<Bill | null>(null);
 
   const [newBill, setNewBill] = useState({
@@ -277,13 +280,18 @@ const Bills = () => {
           <h1 className="text-2xl md:text-3xl font-bold text-foreground">Bills & Payments</h1>
           <p className="text-muted-foreground mt-1">Manage your recurring bills and payments</p>
         </div>
-        <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <Plus className="w-4 h-4" />
-              Add Bill
-            </Button>
-          </DialogTrigger>
+        <div className="flex gap-2">
+          <Button variant="outline" className="gap-2" onClick={() => setIsSplitModalOpen(true)}>
+            <Users className="w-4 h-4" />
+            Split Bill
+          </Button>
+          <Dialog open={isAddModalOpen} onOpenChange={setIsAddModalOpen}>
+            <DialogTrigger asChild>
+              <Button className="gap-2">
+                <Plus className="w-4 h-4" />
+                Add Bill
+              </Button>
+            </DialogTrigger>
           <DialogContent>
             <DialogHeader>
               <DialogTitle>Add New Bill</DialogTitle>
@@ -389,6 +397,7 @@ const Bills = () => {
             </div>
           </DialogContent>
         </Dialog>
+        </div>
       </motion.div>
 
       {/* Summary Cards */}
