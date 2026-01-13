@@ -12,7 +12,15 @@ import {
   X,
   FileText,
   Target,
-  Activity
+  Activity,
+  Calculator,
+  Gift,
+  QrCode,
+  Calendar,
+  TrendingUp,
+  Wallet,
+  RefreshCw,
+  DollarSign
 } from "lucide-react";
 
 interface NavItemProps {
@@ -77,7 +85,7 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
       </div>
 
       {/* Main Navigation */}
-      <nav className="flex-1 space-y-2">
+      <nav className="flex-1 space-y-1 overflow-y-auto">
         <NavItem 
           icon={<LayoutDashboard size={20} />} 
           label="Dashboard" 
@@ -97,10 +105,10 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           onClick={() => handleNavigation("/transfers")}
         />
         <NavItem 
-          icon={<PieChart size={20} />} 
-          label="Analytics" 
-          active={location.pathname === "/analytics"} 
-          onClick={() => handleNavigation("/analytics")}
+          icon={<RefreshCw size={20} />} 
+          label="Recurring Transfers"
+          active={location.pathname === "/recurring-transfers"}
+          onClick={() => handleNavigation("/recurring-transfers")}
         />
         <NavItem 
           icon={<Receipt size={20} />} 
@@ -109,16 +117,82 @@ const Sidebar = ({ isOpen, onClose }: SidebarProps) => {
           onClick={() => handleNavigation("/transactions")}
         />
         <NavItem 
+          icon={<PieChart size={20} />} 
+          label="Analytics" 
+          active={location.pathname === "/analytics"} 
+          onClick={() => handleNavigation("/analytics")}
+        />
+        <NavItem 
+          icon={<TrendingUp size={20} />} 
+          label="Expense Analytics"
+          active={location.pathname === "/expense-analytics"}
+          onClick={() => handleNavigation("/expense-analytics")}
+        />
+        <NavItem 
+          icon={<Wallet size={20} />} 
+          label="Budget Planner"
+          active={location.pathname === "/budget"}
+          onClick={() => handleNavigation("/budget")}
+        />
+        <NavItem 
           icon={<FileText size={20} />} 
           label="Bills & Payments"
           active={location.pathname === "/bills"}
           onClick={() => handleNavigation("/bills")}
         />
         <NavItem 
+          icon={<Calendar size={20} />} 
+          label="Bill Calendar"
+          active={location.pathname === "/bill-calendar"}
+          onClick={() => handleNavigation("/bill-calendar")}
+        />
+        <NavItem 
           icon={<Target size={20} />} 
           label="Savings Goals"
           active={location.pathname === "/savings"}
           onClick={() => handleNavigation("/savings")}
+        />
+        <NavItem 
+          icon={<Gift size={20} />} 
+          label="Rewards"
+          active={location.pathname === "/rewards"}
+          onClick={() => handleNavigation("/rewards")}
+        />
+        <NavItem 
+          icon={<CreditCard size={20} />} 
+          label="Card Rewards"
+          active={location.pathname === "/card-rewards"}
+          onClick={() => handleNavigation("/card-rewards")}
+        />
+        <NavItem 
+          icon={<QrCode size={20} />} 
+          label="QR Payments"
+          active={location.pathname === "/qr-payments"}
+          onClick={() => handleNavigation("/qr-payments")}
+        />
+        <NavItem 
+          icon={<DollarSign size={20} />} 
+          label="Currency Converter"
+          active={location.pathname === "/currency"}
+          onClick={() => handleNavigation("/currency")}
+        />
+        <NavItem 
+          icon={<Calculator size={20} />} 
+          label="Loan Calculator"
+          active={location.pathname === "/loan-calculator"}
+          onClick={() => handleNavigation("/loan-calculator")}
+        />
+        <NavItem 
+          icon={<FileText size={20} />} 
+          label="Financial Reports"
+          active={location.pathname === "/reports"}
+          onClick={() => handleNavigation("/reports")}
+        />
+        <NavItem 
+          icon={<FileText size={20} />} 
+          label="Tax Summary"
+          active={location.pathname === "/tax-summary"}
+          onClick={() => handleNavigation("/tax-summary")}
         />
         <NavItem 
           icon={<Activity size={20} />} 

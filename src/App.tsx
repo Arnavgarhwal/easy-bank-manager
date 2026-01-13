@@ -18,6 +18,17 @@ import HelpCenter from "./pages/HelpCenter";
 import ActivityLogs from "./pages/ActivityLogs";
 import AdminDashboard from "./pages/AdminDashboard";
 import NotFound from "./pages/NotFound";
+import TaxSummary from "./pages/TaxSummary";
+import FinancialReports from "./pages/FinancialReports";
+import Rewards from "./pages/Rewards";
+import CurrencyConverter from "./pages/CurrencyConverter";
+import LoanCalculator from "./pages/LoanCalculator";
+import BillCalendar from "./pages/BillCalendar";
+import CardRewards from "./pages/CardRewards";
+import QRPayments from "./pages/QRPayments";
+import ExpenseAnalytics from "./pages/ExpenseAnalytics";
+import BudgetPlanner from "./pages/BudgetPlanner";
+import RecurringTransfers from "./pages/RecurringTransfers";
 
 const queryClient = new QueryClient();
 
@@ -40,9 +51,19 @@ const App = () => (
             <Route path="/help" element={<HelpCenter />} />
             <Route path="/activity" element={<ActivityLogs />} />
             <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/tax-summary" element={<TaxSummary />} />
+            <Route path="/reports" element={<FinancialReports />} />
+            <Route path="/rewards" element={<Rewards />} />
+            <Route path="/currency" element={<CurrencyConverter />} />
+            <Route path="/loan-calculator" element={<LoanCalculator />} />
+            <Route path="/bill-calendar" element={<BillCalendar />} />
+            <Route path="/card-rewards" element={<CardRewards />} />
+            <Route path="/qr-payments" element={<QRPayments />} />
+            <Route path="/expense-analytics" element={<ExpenseAnalytics />} />
+            <Route path="/budget" element={<BudgetPlanner />} />
+            <Route path="/recurring-transfers" element={<RecurringTransfers />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
