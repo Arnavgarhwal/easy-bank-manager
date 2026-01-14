@@ -4,6 +4,7 @@ import { Eye, EyeOff, Mail, Lock, User } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -13,16 +14,38 @@ const Signup = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (password !== confirmPassword) {
+      toast({
+        title: "Passwords don't match",
+        description: "Please make sure your passwords match",
+        variant: "destructive",
+      });
       return;
     }
     setIsLoading(true);
-    // Simulate signup
+    // Simulate signup - account created successfully
     setTimeout(() => {
       setIsLoading(false);
+      toast({
+        title: "Account Created!",
+        description: "Your account has been created successfully. Welcome to Vault!",
+      });
+      navigate("/");
+    }, 1500);
+  };
+
+  const handleGoogleSignup = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      toast({
+        title: "Account Created!",
+        description: "Your Google account has been linked. Welcome to Vault!",
+      });
       navigate("/");
     }, 1500);
   };
@@ -211,13 +234,7 @@ const Signup = () => {
                 type="button"
                 variant="outline"
                 className="w-full h-12 gap-3"
-                onClick={() => {
-                  setIsLoading(true);
-                  setTimeout(() => {
-                    setIsLoading(false);
-                    navigate("/");
-                  }, 1500);
-                }}
+                onClick={handleGoogleSignup}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>

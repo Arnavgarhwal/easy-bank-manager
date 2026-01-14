@@ -4,6 +4,14 @@ import { Eye, EyeOff, Mail, Lock } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useToast } from "@/hooks/use-toast";
+
+// Static registered users (simulating a database)
+const registeredUsers = [
+  { email: "admin123@gmail.com", password: "admin12345", isAdmin: true },
+  { email: "user@example.com", password: "user123", isAdmin: false },
+  { email: "demo@vault.com", password: "demo123", isAdmin: false },
+];
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -11,18 +19,57 @@ const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
+  const { toast } = useToast();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // Check for admin credentials
+    
+    // Check if user exists in registered users
     setTimeout(() => {
       setIsLoading(false);
-      if (email === "admin123@gmail.com" && password === "admin12345") {
-        navigate("/admin");
+      const user = registeredUsers.find(
+        (u) => u.email === email && u.password === password
+      );
+      
+      if (user) {
+        toast({
+          title: "Welcome back!",
+          description: "Login successful",
+        });
+        if (user.isAdmin) {
+          navigate("/admin");
+        } else {
+          navigate("/");
+        }
       } else {
-        navigate("/");
+        const userExists = registeredUsers.find((u) => u.email === email);
+        if (userExists) {
+          toast({
+            title: "Incorrect Password",
+            description: "The password you entered is incorrect",
+            variant: "destructive",
+          });
+        } else {
+          toast({
+            title: "Account Not Found",
+            description: "No account exists with this email. Please sign up first.",
+            variant: "destructive",
+          });
+        }
       }
+    }, 1500);
+  };
+
+  const handleGoogleSignIn = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      toast({
+        title: "Account Not Found",
+        description: "No account linked to this Google account. Please sign up first.",
+        variant: "destructive",
+      });
     }, 1500);
   };
 
@@ -156,13 +203,7 @@ const Login = () => {
                 type="button"
                 variant="outline"
                 className="w-full h-12 gap-3"
-                onClick={() => {
-                  setIsLoading(true);
-                  setTimeout(() => {
-                    setIsLoading(false);
-                    navigate("/");
-                  }, 1500);
-                }}
+                onClick={handleGoogleSignIn}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
