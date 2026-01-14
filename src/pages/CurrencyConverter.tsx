@@ -10,8 +10,8 @@ import { ArrowRightLeft, TrendingUp, TrendingDown, RefreshCw, Star, Plus } from 
 const CurrencyConverter = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [amount, setAmount] = useState("1000");
-  const [fromCurrency, setFromCurrency] = useState("USD");
-  const [toCurrency, setToCurrency] = useState("EUR");
+  const [fromCurrency, setFromCurrency] = useState("INR");
+  const [toCurrency, setToCurrency] = useState("USD");
 
   const currencies = [
     { code: "USD", name: "US Dollar", symbol: "$", flag: "🇺🇸" },
@@ -25,14 +25,14 @@ const CurrencyConverter = () => {
   ];
 
   const exchangeRates: Record<string, Record<string, number>> = {
-    USD: { EUR: 0.92, GBP: 0.79, JPY: 148.50, CAD: 1.35, AUD: 1.53, CHF: 0.88, INR: 83.12 },
-    EUR: { USD: 1.09, GBP: 0.86, JPY: 161.50, CAD: 1.47, AUD: 1.66, CHF: 0.96, INR: 90.35 },
-    GBP: { USD: 1.27, EUR: 1.16, JPY: 188.20, CAD: 1.71, AUD: 1.94, CHF: 1.12, INR: 105.26 },
-    JPY: { USD: 0.0067, EUR: 0.0062, GBP: 0.0053, CAD: 0.0091, AUD: 0.010, CHF: 0.0059, INR: 0.56 },
-    CAD: { USD: 0.74, EUR: 0.68, GBP: 0.58, JPY: 110.00, AUD: 1.13, CHF: 0.65, INR: 61.57 },
-    AUD: { USD: 0.65, EUR: 0.60, GBP: 0.52, JPY: 97.00, CAD: 0.88, CHF: 0.57, INR: 54.32 },
-    CHF: { USD: 1.14, EUR: 1.04, GBP: 0.89, JPY: 168.75, CAD: 1.53, AUD: 1.74, INR: 94.45 },
-    INR: { USD: 0.012, EUR: 0.011, GBP: 0.0095, JPY: 1.79, CAD: 0.016, AUD: 0.018, CHF: 0.011 },
+    USD: { EUR: 0.92, GBP: 0.79, JPY: 148.50, CAD: 1.35, AUD: 1.53, CHF: 0.88, INR: 90.10 },
+    EUR: { USD: 1.09, GBP: 0.86, JPY: 161.50, CAD: 1.47, AUD: 1.66, CHF: 0.96, INR: 98.01 },
+    GBP: { USD: 1.27, EUR: 1.16, JPY: 188.20, CAD: 1.71, AUD: 1.94, CHF: 1.12, INR: 114.03 },
+    JPY: { USD: 0.0067, EUR: 0.0062, GBP: 0.0053, CAD: 0.0091, AUD: 0.010, CHF: 0.0059, INR: 0.61 },
+    CAD: { USD: 0.74, EUR: 0.68, GBP: 0.58, JPY: 110.00, AUD: 1.13, CHF: 0.65, INR: 66.74 },
+    AUD: { USD: 0.65, EUR: 0.60, GBP: 0.52, JPY: 97.00, CAD: 0.88, CHF: 0.57, INR: 58.57 },
+    CHF: { USD: 1.14, EUR: 1.04, GBP: 0.89, JPY: 168.75, CAD: 1.53, AUD: 1.74, INR: 102.71 },
+    INR: { USD: 0.0111, EUR: 0.0102, GBP: 0.0088, JPY: 1.65, CAD: 0.015, AUD: 0.017, CHF: 0.0097 },
   };
 
   const getRate = (from: string, to: string) => {
@@ -48,13 +48,13 @@ const CurrencyConverter = () => {
     { from: "EUR", to: "GBP", rate: 0.86, change: 0.08 },
     { from: "USD", to: "JPY", rate: 148.50, change: -0.45 },
     { from: "GBP", to: "EUR", rate: 1.16, change: -0.12 },
-    { from: "USD", to: "INR", rate: 83.12, change: 0.18 },
+    { from: "USD", to: "INR", rate: 90.10, change: 0.25 },
   ];
 
   const myWallets = [
+    { currency: "INR", balance: 1121745.00, flag: "🇮🇳" },
     { currency: "USD", balance: 12450.00, flag: "🇺🇸" },
     { currency: "EUR", balance: 3200.50, flag: "🇪🇺" },
-    { currency: "GBP", balance: 1850.75, flag: "🇬🇧" },
   ];
 
   const swapCurrencies = () => {

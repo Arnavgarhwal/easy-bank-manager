@@ -21,7 +21,7 @@ const BalanceCard = () => {
             <p className="text-muted-foreground text-sm mb-1">Total Balance</p>
             <div className="flex items-center gap-3">
               <h2 className="font-display text-4xl font-bold text-foreground">
-                {showBalance ? "$48,562.00" : "••••••••"}
+                {showBalance ? "₹43,74,632.20" : "••••••••"}
               </h2>
               <button
                 onClick={() => setShowBalance(!showBalance)}
@@ -44,11 +44,11 @@ const BalanceCard = () => {
         <div className="grid grid-cols-2 gap-6">
           <div>
             <p className="text-muted-foreground text-xs mb-1">Income</p>
-            <p className="font-display text-xl font-semibold text-foreground">$12,450.00</p>
+            <p className="font-display text-xl font-semibold text-foreground">₹11,21,745.00</p>
           </div>
           <div>
             <p className="text-muted-foreground text-xs mb-1">Expenses</p>
-            <p className="font-display text-xl font-semibold text-foreground">$4,320.00</p>
+            <p className="font-display text-xl font-semibold text-foreground">₹3,89,232.00</p>
           </div>
         </div>
       </div>

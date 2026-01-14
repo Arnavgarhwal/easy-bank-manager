@@ -12,12 +12,12 @@ interface Transaction {
 }
 
 const transactions: Transaction[] = [
-  { id: "1", name: "Amazon Purchase", category: "Shopping", amount: -156.99, date: "Today, 2:30 PM", icon: <ShoppingCart size={18} />, type: "expense" },
-  { id: "2", name: "Salary Deposit", category: "Income", amount: 5200.00, date: "Today, 9:00 AM", icon: <Building2 size={18} />, type: "income" },
-  { id: "3", name: "Starbucks", category: "Food & Drink", amount: -8.50, date: "Yesterday, 4:15 PM", icon: <Coffee size={18} />, type: "expense" },
-  { id: "4", name: "Electric Bill", category: "Utilities", amount: -124.00, date: "Yesterday, 11:00 AM", icon: <Zap size={18} />, type: "expense" },
-  { id: "5", name: "Spotify", category: "Entertainment", amount: -9.99, date: "Jan 8, 2026", icon: <Music size={18} />, type: "expense" },
-  { id: "6", name: "Flight Booking", category: "Travel", amount: -450.00, date: "Jan 7, 2026", icon: <Plane size={18} />, type: "expense" },
+  { id: "1", name: "Amazon Purchase", category: "Shopping", amount: -14144.60, date: "Today, 2:30 PM", icon: <ShoppingCart size={18} />, type: "expense" },
+  { id: "2", name: "Salary Deposit", category: "Income", amount: 468520.00, date: "Today, 9:00 AM", icon: <Building2 size={18} />, type: "income" },
+  { id: "3", name: "Starbucks", category: "Food & Drink", amount: -765.85, date: "Yesterday, 4:15 PM", icon: <Coffee size={18} />, type: "expense" },
+  { id: "4", name: "Electric Bill", category: "Utilities", amount: -11172.40, date: "Yesterday, 11:00 AM", icon: <Zap size={18} />, type: "expense" },
+  { id: "5", name: "Spotify", category: "Entertainment", amount: -900.00, date: "Jan 8, 2026", icon: <Music size={18} />, type: "expense" },
+  { id: "6", name: "Flight Booking", category: "Travel", amount: -40545.00, date: "Jan 7, 2026", icon: <Plane size={18} />, type: "expense" },
 ];
 
 const TransactionItem = ({ transaction, index }: { transaction: Transaction; index: number }) => (
@@ -41,7 +41,7 @@ const TransactionItem = ({ transaction, index }: { transaction: Transaction; ind
     <p className={`font-display font-semibold ${
       transaction.type === "income" ? "text-success" : "text-foreground"
     }`}>
-      {transaction.type === "income" ? "+" : ""}{transaction.amount.toLocaleString("en-US", { style: "currency", currency: "USD" })}
+      {transaction.type === "income" ? "+" : ""}{transaction.amount.toLocaleString("en-IN", { style: "currency", currency: "INR" })}
     </p>
   </motion.div>
 );
