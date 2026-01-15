@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,63 +12,92 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Plus, Calendar, Clock, User, Trash2, Edit, Pause, Play, DollarSign, RefreshCw, ArrowUpRight } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
+const TRANSFERS_STORAGE_KEY = "vault_recurring_transfers";
+const RECIPIENTS_STORAGE_KEY = "vault_saved_recipients";
+
+const defaultTransfers = [
+  {
+    id: 1,
+    recipient: "Rent - Landlord LLC",
+    amount: 18000,
+    frequency: "Monthly",
+    nextDate: "Feb 1, 2024",
+    account: "Checking ****4532",
+    active: true,
+    category: "Housing"
+  },
+  {
+    id: 2,
+    recipient: "Mom - Mary Garhwal",
+    amount: 5000,
+    frequency: "Monthly",
+    nextDate: "Feb 5, 2024",
+    account: "Checking ****4532",
+    active: true,
+    category: "Family"
+  },
+  {
+    id: 3,
+    recipient: "Savings Goal - Emergency Fund",
+    amount: 3000,
+    frequency: "Bi-weekly",
+    nextDate: "Feb 2, 2024",
+    account: "Savings ****7891",
+    active: true,
+    category: "Savings"
+  },
+  {
+    id: 4,
+    recipient: "Investment - Brokerage",
+    amount: 2000,
+    frequency: "Weekly",
+    nextDate: "Jan 31, 2024",
+    account: "Checking ****4532",
+    active: true,
+    category: "Investment"
+  },
+  {
+    id: 5,
+    recipient: "Car Payment - Auto Loan",
+    amount: 4250,
+    frequency: "Monthly",
+    nextDate: "Feb 15, 2024",
+    account: "Checking ****4532",
+    active: false,
+    category: "Auto"
+  },
+];
+
+const defaultRecipients = [
+  { id: 1, name: "Mom - Mary Garhwal", account: "****5678" },
+  { id: 2, name: "Sarah Wilson", account: "****9012" },
+  { id: 3, name: "Electric Company", account: "****3456" },
+  { id: 4, name: "Gym Membership", account: "****7890" },
+];
+
 const RecurringTransfers = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddRecipientOpen, setIsAddRecipientOpen] = useState(false);
   const { toast } = useToast();
 
-  const [transfers, setTransfers] = useState([
-    {
-      id: 1,
-      recipient: "Rent - Landlord LLC",
-      amount: 1800,
-      frequency: "Monthly",
-      nextDate: "Feb 1, 2024",
-      account: "Checking ****4532",
-      active: true,
-      category: "Housing"
-    },
-    {
-      id: 2,
-      recipient: "Mom - Mary Garhwal",
-      amount: 500,
-      frequency: "Monthly",
-      nextDate: "Feb 5, 2024",
-      account: "Checking ****4532",
-      active: true,
-      category: "Family"
-    },
-    {
-      id: 3,
-      recipient: "Savings Goal - Emergency Fund",
-      amount: 300,
-      frequency: "Bi-weekly",
-      nextDate: "Feb 2, 2024",
-      account: "Savings ****7891",
-      active: true,
-      category: "Savings"
-    },
-    {
-      id: 4,
-      recipient: "Investment - Brokerage",
-      amount: 200,
-      frequency: "Weekly",
-      nextDate: "Jan 31, 2024",
-      account: "Checking ****4532",
-      active: true,
-      category: "Investment"
-    },
-    {
-      id: 5,
-      recipient: "Car Payment - Auto Loan",
-      amount: 425,
-      frequency: "Monthly",
-      nextDate: "Feb 15, 2024",
-      account: "Checking ****4532",
-      active: false,
-      category: "Auto"
-    },
-  ]);
+  const [transfers, setTransfers] = useState(() => {
+    const stored = localStorage.getItem(TRANSFERS_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : defaultTransfers;
+  });
+
+  const [savedRecipients, setSavedRecipients] = useState(() => {
+    const stored = localStorage.getItem(RECIPIENTS_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : defaultRecipients;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(TRANSFERS_STORAGE_KEY, JSON.stringify(transfers));
+  }, [transfers]);
+
+  useEffect(() => {
+    localStorage.setItem(RECIPIENTS_STORAGE_KEY, JSON.stringify(savedRecipients));
+  }, [savedRecipients]);
 
   const [newTransfer, setNewTransfer] = useState({
     recipient: "",
@@ -78,16 +107,14 @@ const RecurringTransfers = () => {
     account: "checking"
   });
 
-  const savedRecipients = [
-    { id: 1, name: "Mom - Mary Garhwal", account: "****5678" },
-    { id: 2, name: "Sarah Wilson", account: "****9012" },
-    { id: 3, name: "Electric Company", account: "****3456" },
-    { id: 4, name: "Gym Membership", account: "****7890" },
-  ];
+  const [newRecipient, setNewRecipient] = useState({
+    name: "",
+    account: ""
+  });
 
   const totalMonthly = transfers
-    .filter(t => t.active)
-    .reduce((sum, t) => {
+    .filter((t: any) => t.active)
+    .reduce((sum: number, t: any) => {
       switch (t.frequency) {
         case "Weekly": return sum + (t.amount * 4);
         case "Bi-weekly": return sum + (t.amount * 2);
@@ -95,14 +122,14 @@ const RecurringTransfers = () => {
       }
     }, 0);
 
-  const activeCount = transfers.filter(t => t.active).length;
-  const pausedCount = transfers.filter(t => !t.active).length;
+  const activeCount = transfers.filter((t: any) => t.active).length;
+  const pausedCount = transfers.filter((t: any) => !t.active).length;
 
   const toggleTransfer = (id: number) => {
-    setTransfers(transfers.map(t => 
+    setTransfers(transfers.map((t: any) => 
       t.id === id ? { ...t, active: !t.active } : t
     ));
-    const transfer = transfers.find(t => t.id === id);
+    const transfer = transfers.find((t: any) => t.id === id);
     toast({
       title: transfer?.active ? "Transfer paused" : "Transfer resumed",
       description: `${transfer?.recipient} has been ${transfer?.active ? 'paused' : 'resumed'}`
@@ -110,8 +137,8 @@ const RecurringTransfers = () => {
   };
 
   const deleteTransfer = (id: number) => {
-    const transfer = transfers.find(t => t.id === id);
-    setTransfers(transfers.filter(t => t.id !== id));
+    const transfer = transfers.find((t: any) => t.id === id);
+    setTransfers(transfers.filter((t: any) => t.id !== id));
     toast({
       title: "Transfer deleted",
       description: `${transfer?.recipient} has been removed`
@@ -125,7 +152,7 @@ const RecurringTransfers = () => {
     }
 
     const newItem = {
-      id: transfers.length + 1,
+      id: Date.now(),
       recipient: newTransfer.recipient,
       amount: parseFloat(newTransfer.amount),
       frequency: newTransfer.frequency === "weekly" ? "Weekly" : 
@@ -140,6 +167,24 @@ const RecurringTransfers = () => {
     setNewTransfer({ recipient: "", amount: "", frequency: "monthly", startDate: "", account: "checking" });
     setIsAddModalOpen(false);
     toast({ title: "Transfer scheduled!", description: `Recurring transfer to ${newTransfer.recipient} has been set up` });
+  };
+
+  const handleAddRecipient = () => {
+    if (!newRecipient.name || !newRecipient.account) {
+      toast({ title: "Missing fields", description: "Please fill in all required fields", variant: "destructive" });
+      return;
+    }
+
+    const newItem = {
+      id: Date.now(),
+      name: newRecipient.name,
+      account: `****${newRecipient.account.slice(-4)}`
+    };
+
+    setSavedRecipients([...savedRecipients, newItem]);
+    setNewRecipient({ name: "", account: "" });
+    setIsAddRecipientOpen(false);
+    toast({ title: "Recipient added!", description: `${newRecipient.name} has been saved` });
   };
 
   return (
@@ -177,7 +222,7 @@ const RecurringTransfers = () => {
                         <SelectValue placeholder="Select or enter recipient" />
                       </SelectTrigger>
                       <SelectContent>
-                        {savedRecipients.map((r) => (
+                        {savedRecipients.map((r: any) => (
                           <SelectItem key={r.id} value={r.name}>{r.name}</SelectItem>
                         ))}
                       </SelectContent>
@@ -185,12 +230,12 @@ const RecurringTransfers = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Amount</Label>
+                    <Label>Amount (₹)</Label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
                       <Input 
                         type="number" 
-                        placeholder="0.00" 
+                        placeholder="0" 
                         className="pl-8"
                         value={newTransfer.amount}
                         onChange={(e) => setNewTransfer({ ...newTransfer, amount: e.target.value })}
@@ -254,7 +299,7 @@ const RecurringTransfers = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Monthly Total</p>
-                  <p className="text-2xl font-bold text-foreground">${totalMonthly.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-foreground">₹{totalMonthly.toLocaleString()}</p>
                 </div>
                 <DollarSign className="h-8 w-8 text-primary" />
               </div>
@@ -305,7 +350,7 @@ const RecurringTransfers = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-4">
-              {transfers.map((transfer) => (
+              {transfers.map((transfer: any) => (
                 <div 
                   key={transfer.id} 
                   className={`flex flex-col sm:flex-row sm:items-center justify-between p-4 rounded-lg border ${
@@ -337,7 +382,7 @@ const RecurringTransfers = () => {
 
                   <div className="flex items-center gap-4">
                     <div className="text-right">
-                      <p className="text-xl font-bold text-foreground">${transfer.amount.toLocaleString()}</p>
+                      <p className="text-xl font-bold text-foreground">₹{transfer.amount.toLocaleString()}</p>
                       <Badge variant={transfer.active ? "default" : "secondary"}>
                         {transfer.active ? "Active" : "Paused"}
                       </Badge>
@@ -353,9 +398,6 @@ const RecurringTransfers = () => {
                         ) : (
                           <Play className="h-4 w-4" />
                         )}
-                      </Button>
-                      <Button variant="ghost" size="icon">
-                        <Edit className="h-4 w-4" />
                       </Button>
                       <Button 
                         variant="ghost" 
@@ -375,12 +417,44 @@ const RecurringTransfers = () => {
 
         {/* Quick Recipients */}
         <Card className="mt-6">
-          <CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
             <CardTitle>Saved Recipients</CardTitle>
+            <Dialog open={isAddRecipientOpen} onOpenChange={setIsAddRecipientOpen}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Plus className="h-4 w-4" />
+                  Add Recipient
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add New Recipient</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4 mt-4">
+                  <div className="space-y-2">
+                    <Label>Recipient Name</Label>
+                    <Input 
+                      placeholder="e.g., John Doe" 
+                      value={newRecipient.name}
+                      onChange={(e) => setNewRecipient({ ...newRecipient, name: e.target.value })}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Account Number</Label>
+                    <Input 
+                      placeholder="Enter account number" 
+                      value={newRecipient.account}
+                      onChange={(e) => setNewRecipient({ ...newRecipient, account: e.target.value })}
+                    />
+                  </div>
+                  <Button className="w-full" onClick={handleAddRecipient}>Add Recipient</Button>
+                </div>
+              </DialogContent>
+            </Dialog>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {savedRecipients.map((recipient) => (
+              {savedRecipients.map((recipient: any) => (
                 <div key={recipient.id} className="p-4 rounded-lg border bg-card hover:bg-muted/50 transition-colors cursor-pointer text-center">
                   <div className="h-12 w-12 rounded-full bg-primary/10 flex items-center justify-center mx-auto mb-2">
                     <User className="h-6 w-6 text-primary" />
@@ -389,10 +463,6 @@ const RecurringTransfers = () => {
                   <p className="text-xs text-muted-foreground">{recipient.account}</p>
                 </div>
               ))}
-              <div className="p-4 rounded-lg border-2 border-dashed border-primary/30 flex flex-col items-center justify-center hover:bg-primary/5 transition-colors cursor-pointer">
-                <Plus className="h-6 w-6 text-primary mb-1" />
-                <p className="text-sm font-medium text-primary">Add New</p>
-              </div>
             </div>
           </CardContent>
         </Card>
