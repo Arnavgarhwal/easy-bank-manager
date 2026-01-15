@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,24 +10,39 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
-import { Plus, AlertTriangle, CheckCircle, TrendingUp, DollarSign, Target, Bell, Home, Utensils, Car, ShoppingBag, Film, Zap, Heart, Briefcase } from "lucide-react";
+import { Plus, AlertTriangle, CheckCircle, TrendingUp, DollarSign, Target, Bell, Home, Utensils, Car, ShoppingBag, Film, Zap, Heart, Briefcase, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+const BUDGETS_STORAGE_KEY = "vault_budgets";
+
+const defaultBudgets = [
+  { id: 1, name: "Housing", icon: "Home", budget: 1800, spent: 1800, color: "bg-blue-500", alert: 90, alertEnabled: true },
+  { id: 2, name: "Food & Dining", icon: "Utensils", budget: 600, spent: 520, color: "bg-orange-500", alert: 80, alertEnabled: true },
+  { id: 3, name: "Transportation", icon: "Car", budget: 500, spent: 380, color: "bg-green-500", alert: 85, alertEnabled: true },
+  { id: 4, name: "Shopping", icon: "ShoppingBag", budget: 300, spent: 285, color: "bg-purple-500", alert: 75, alertEnabled: true },
+  { id: 5, name: "Entertainment", icon: "Film", budget: 200, spent: 120, color: "bg-pink-500", alert: 80, alertEnabled: false },
+  { id: 6, name: "Utilities", icon: "Zap", budget: 250, spent: 215, color: "bg-yellow-500", alert: 90, alertEnabled: true },
+  { id: 7, name: "Healthcare", icon: "Heart", budget: 150, spent: 45, color: "bg-red-500", alert: 80, alertEnabled: true },
+  { id: 8, name: "Personal", icon: "Briefcase", budget: 200, spent: 165, color: "bg-teal-500", alert: 75, alertEnabled: false },
+];
+
+const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
+  Home, Utensils, Car, ShoppingBag, Film, Zap, Heart, Briefcase
+};
 
 const BudgetPlanner = () => {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [isAddBudgetOpen, setIsAddBudgetOpen] = useState(false);
   const { toast } = useToast();
 
-  const [budgets, setBudgets] = useState([
-    { id: 1, name: "Housing", icon: Home, budget: 1800, spent: 1800, color: "bg-blue-500", alert: 90, alertEnabled: true },
-    { id: 2, name: "Food & Dining", icon: Utensils, budget: 600, spent: 520, color: "bg-orange-500", alert: 80, alertEnabled: true },
-    { id: 3, name: "Transportation", icon: Car, budget: 500, spent: 380, color: "bg-green-500", alert: 85, alertEnabled: true },
-    { id: 4, name: "Shopping", icon: ShoppingBag, budget: 300, spent: 285, color: "bg-purple-500", alert: 75, alertEnabled: true },
-    { id: 5, name: "Entertainment", icon: Film, budget: 200, spent: 120, color: "bg-pink-500", alert: 80, alertEnabled: false },
-    { id: 6, name: "Utilities", icon: Zap, budget: 250, spent: 215, color: "bg-yellow-500", alert: 90, alertEnabled: true },
-    { id: 7, name: "Healthcare", icon: Heart, budget: 150, spent: 45, color: "bg-red-500", alert: 80, alertEnabled: true },
-    { id: 8, name: "Personal", icon: Briefcase, budget: 200, spent: 165, color: "bg-teal-500", alert: 75, alertEnabled: false },
-  ]);
+  const [budgets, setBudgets] = useState(() => {
+    const stored = localStorage.getItem(BUDGETS_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : defaultBudgets;
+  });
+
+  useEffect(() => {
+    localStorage.setItem(BUDGETS_STORAGE_KEY, JSON.stringify(budgets));
+  }, [budgets]);
 
   const [newBudget, setNewBudget] = useState({
     name: "",
@@ -36,11 +51,11 @@ const BudgetPlanner = () => {
     category: "other"
   });
 
-  const totalBudget = budgets.reduce((sum, b) => sum + b.budget, 0);
-  const totalSpent = budgets.reduce((sum, b) => sum + b.spent, 0);
+  const totalBudget = budgets.reduce((sum: number, b: any) => sum + b.budget, 0);
+  const totalSpent = budgets.reduce((sum: number, b: any) => sum + b.spent, 0);
   const remaining = totalBudget - totalSpent;
 
-  const alerts = budgets.filter(b => {
+  const alerts = budgets.filter((b: any) => {
     const percentage = (b.spent / b.budget) * 100;
     return b.alertEnabled && percentage >= b.alert;
   });
@@ -52,9 +67,9 @@ const BudgetPlanner = () => {
     }
 
     const newItem = {
-      id: budgets.length + 1,
+      id: Date.now(),
       name: newBudget.name,
-      icon: Briefcase,
+      icon: "Briefcase",
       budget: parseFloat(newBudget.budget),
       spent: 0,
       color: "bg-gray-500",
@@ -69,9 +84,21 @@ const BudgetPlanner = () => {
   };
 
   const toggleAlert = (id: number) => {
-    setBudgets(budgets.map(b => 
+    setBudgets(budgets.map((b: any) => 
       b.id === id ? { ...b, alertEnabled: !b.alertEnabled } : b
     ));
+  };
+
+  const deleteBudget = (id: number) => {
+    setBudgets(budgets.filter((b: any) => b.id !== id));
+    toast({ title: "Budget deleted", description: "The budget category has been removed" });
+  };
+
+  const addSpending = (id: number, amount: number) => {
+    setBudgets(budgets.map((b: any) => 
+      b.id === id ? { ...b, spent: Math.min(b.spent + amount, b.budget * 1.5) } : b
+    ));
+    toast({ title: "Spending added", description: `₹${amount} added to the category` });
   };
 
   return (
@@ -108,12 +135,12 @@ const BudgetPlanner = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label>Monthly Budget</Label>
+                    <Label>Monthly Budget (₹)</Label>
                     <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">$</span>
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">₹</span>
                       <Input 
                         type="number" 
-                        placeholder="0.00" 
+                        placeholder="0" 
                         className="pl-8"
                         value={newBudget.budget}
                         onChange={(e) => setNewBudget({ ...newBudget, budget: e.target.value })}
@@ -149,7 +176,7 @@ const BudgetPlanner = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Budget</p>
-                  <p className="text-2xl font-bold text-foreground">${totalBudget.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-foreground">₹{totalBudget.toLocaleString()}</p>
                 </div>
                 <Target className="h-8 w-8 text-primary" />
               </div>
@@ -161,7 +188,7 @@ const BudgetPlanner = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Total Spent</p>
-                  <p className="text-2xl font-bold text-blue-600">${totalSpent.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-blue-600">₹{totalSpent.toLocaleString()}</p>
                 </div>
                 <DollarSign className="h-8 w-8 text-blue-600" />
               </div>
@@ -173,7 +200,7 @@ const BudgetPlanner = () => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm text-muted-foreground">Remaining</p>
-                  <p className="text-2xl font-bold text-green-600">${remaining.toLocaleString()}</p>
+                  <p className="text-2xl font-bold text-green-600">₹{remaining.toLocaleString()}</p>
                 </div>
                 <TrendingUp className="h-8 w-8 text-green-600" />
               </div>
@@ -208,14 +235,14 @@ const BudgetPlanner = () => {
             </CardHeader>
             <CardContent>
               <div className="space-y-2">
-                {alerts.map((alert) => {
+                {alerts.map((alert: any) => {
                   const percentage = Math.round((alert.spent / alert.budget) * 100);
                   return (
                     <div key={alert.id} className="flex items-center justify-between p-3 rounded-lg bg-background">
                       <span className="font-medium text-foreground">{alert.name}</span>
                       <div className="flex items-center gap-3">
                         <span className="text-sm text-muted-foreground">
-                          ${alert.spent} / ${alert.budget}
+                          ₹{alert.spent} / ₹{alert.budget}
                         </span>
                         <Badge variant="destructive">{percentage}%</Badge>
                       </div>
@@ -234,8 +261,8 @@ const BudgetPlanner = () => {
           </CardHeader>
           <CardContent>
             <div className="space-y-6">
-              {budgets.map((budget) => {
-                const Icon = budget.icon;
+              {budgets.map((budget: any) => {
+                const Icon = iconMap[budget.icon] || Briefcase;
                 const percentage = Math.round((budget.spent / budget.budget) * 100);
                 const isNearLimit = percentage >= budget.alert;
                 const isOverBudget = percentage > 100;
@@ -250,11 +277,18 @@ const BudgetPlanner = () => {
                         <div>
                           <p className="font-medium text-foreground">{budget.name}</p>
                           <p className="text-sm text-muted-foreground">
-                            ${budget.spent.toLocaleString()} of ${budget.budget.toLocaleString()}
+                            ₹{budget.spent.toLocaleString()} of ₹{budget.budget.toLocaleString()}
                           </p>
                         </div>
                       </div>
                       <div className="flex items-center gap-4">
+                        <Button 
+                          variant="outline" 
+                          size="sm"
+                          onClick={() => addSpending(budget.id, 100)}
+                        >
+                          +₹100
+                        </Button>
                         <div className="flex items-center gap-2">
                           <Bell className={`h-4 w-4 ${budget.alertEnabled ? 'text-primary' : 'text-muted-foreground'}`} />
                           <Switch 
@@ -262,6 +296,14 @@ const BudgetPlanner = () => {
                             onCheckedChange={() => toggleAlert(budget.id)}
                           />
                         </div>
+                        <Button 
+                          variant="ghost" 
+                          size="icon"
+                          onClick={() => deleteBudget(budget.id)}
+                          className="text-destructive hover:text-destructive"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
                         <Badge 
                           variant={isOverBudget ? "destructive" : isNearLimit ? "secondary" : "outline"}
                           className={isNearLimit && !isOverBudget ? "bg-orange-500/10 text-orange-600 border-orange-500/30" : ""}
@@ -283,7 +325,7 @@ const BudgetPlanner = () => {
                       )}
                     </div>
                     <div className="flex justify-between text-xs text-muted-foreground">
-                      <span>Remaining: ${Math.max(0, budget.budget - budget.spent).toLocaleString()}</span>
+                      <span>Remaining: ₹{Math.max(0, budget.budget - budget.spent).toLocaleString()}</span>
                       {budget.alertEnabled && (
                         <span>Alert at {budget.alert}%</span>
                       )}

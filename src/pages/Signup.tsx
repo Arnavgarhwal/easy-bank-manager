@@ -5,6 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/contexts/AuthContext";
+import GoogleAccountPicker from "@/components/GoogleAccountPicker";
 
 const Signup = () => {
   const [name, setName] = useState("");
@@ -13,8 +15,10 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showGooglePicker, setShowGooglePicker] = useState(false);
   const navigate = useNavigate();
   const { toast } = useToast();
+  const { signup, signupWithGoogle, getGoogleAccounts } = useAuth();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -26,28 +30,68 @@ const Signup = () => {
       });
       return;
     }
+
+    if (password.length < 6) {
+      toast({
+        title: "Password too short",
+        description: "Password must be at least 6 characters",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
-    // Simulate signup - account created successfully
+    
     setTimeout(() => {
       setIsLoading(false);
-      toast({
-        title: "Account Created!",
-        description: "Your account has been created successfully. Welcome to Vault!",
-      });
-      navigate("/");
-    }, 1500);
+      const result = signup(name, email, password);
+      
+      if (result.success) {
+        toast({
+          title: "Account Created!",
+          description: "Your account has been created successfully. Welcome to Vault!",
+        });
+        navigate("/");
+      } else {
+        toast({
+          title: result.error || "Signup Failed",
+          description: result.error === "Email Already Registered"
+            ? "An account with this email already exists. Please sign in instead."
+            : "Failed to create account. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }, 1000);
   };
 
   const handleGoogleSignup = () => {
+    setShowGooglePicker(true);
+  };
+
+  const handleSelectGoogleAccount = (account: { email: string; name: string; avatar: string }) => {
+    setShowGooglePicker(false);
     setIsLoading(true);
+    
     setTimeout(() => {
       setIsLoading(false);
-      toast({
-        title: "Account Created!",
-        description: "Your Google account has been linked. Welcome to Vault!",
-      });
-      navigate("/");
-    }, 1500);
+      const result = signupWithGoogle(account);
+      
+      if (result.success) {
+        toast({
+          title: "Account Created!",
+          description: `Your Google account (${account.email}) has been linked. Welcome to Vault!`,
+        });
+        navigate("/");
+      } else {
+        toast({
+          title: result.error || "Signup Failed",
+          description: result.error === "Email Already Registered"
+            ? "An account with this email already exists. Please sign in instead."
+            : "Failed to create account. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }, 1000);
   };
 
   return (
@@ -235,6 +279,7 @@ const Signup = () => {
                 variant="outline"
                 className="w-full h-12 gap-3"
                 onClick={handleGoogleSignup}
+                disabled={isLoading}
               >
                 <svg className="w-5 h-5" viewBox="0 0 24 24">
                   <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -257,6 +302,15 @@ const Signup = () => {
           </div>
         </motion.div>
       </div>
+
+      {/* Google Account Picker */}
+      <GoogleAccountPicker
+        isOpen={showGooglePicker}
+        onClose={() => setShowGooglePicker(false)}
+        accounts={getGoogleAccounts()}
+        onSelectAccount={handleSelectGoogleAccount}
+        title="Sign up with Google"
+      />
     </div>
   );
 };
